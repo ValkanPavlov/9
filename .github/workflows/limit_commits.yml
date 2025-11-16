@@ -1,0 +1,20 @@
+name: Limit commits per push
+
+on: 
+  push:
+
+jobs:
+  check-commits:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Count commits in this push
+        run: |
+          COUNT=$(git rev-list --count ${{ github.event.before }}..${{ github.sha }})
+          echo "Commits in this push: $COUNT"
+          
+          if [ "$COUNT" -gt 20 ]; then
+            echo "❌ Too many commits in one push! Limit is 20."
+            exit 1
